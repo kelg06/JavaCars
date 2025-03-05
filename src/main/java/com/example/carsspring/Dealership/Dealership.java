@@ -1,6 +1,7 @@
 package com.example.carsspring.Dealership;
 
 import com.example.carsspring.Car.Car;
+import com.example.carsspring.Customers.Customer;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
@@ -18,6 +19,9 @@ public class Dealership {
 
     @OneToMany(mappedBy = "dealership", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Car> cars = new HashSet<>();
+
+    @ManyToMany(mappedBy = "dealerships")  // This must match the Customer entity
+    private Set<Customer> customers = new HashSet<>();
 
     public Dealership() {
     }
@@ -65,6 +69,14 @@ public class Dealership {
         this.cars = cars;
     }
 
+    public Set<Customer> getCustomers() {
+        return customers;
+    }
+
+    public void setCustomers(Set<Customer> customers) {
+        this.customers = customers;
+    }
+
     @Override
     public String toString() {
         return "Dealership{" +
@@ -72,6 +84,7 @@ public class Dealership {
                 ", dealerName='" + dealerName + '\'' +
                 ", dealLoc='" + dealLoc + '\'' +
                 ", cars=" + cars +
+                ", customers=" + customers +
                 '}';
     }
 }
