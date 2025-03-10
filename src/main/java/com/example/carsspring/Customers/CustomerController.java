@@ -1,8 +1,10 @@
 package com.example.carsspring.Customers;
 
-import com.example.carsspring.Customers.CustomerRepository;
+import com.example.carsspring.Dealership.Dealership;
+import com.example.carsspring.Dealership.DealershipRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -10,7 +12,10 @@ import java.util.List;
 public class CustomerController {
 
     @Autowired
-     CustomerRepository customerRepository;
+    private CustomerRepository customerRepository;
+
+    @Autowired
+    private DealershipRepository dealershipRepository;
 
     @GetMapping
     public List<Customer> getAllCustomers() {
@@ -40,5 +45,17 @@ public class CustomerController {
     @DeleteMapping("/{id}")
     public void deleteCustomer(@PathVariable Long id) {
         customerRepository.deleteById(id);
+    }
+
+    // ✅ Add a Dealership to an existing Customer
+    @PutMapping("/{customerId}/addDealership/{dealershipId}")
+    public Customer addDealershipToCustomer(@PathVariable Long customerId, @PathVariable Long dealershipId) {
+        return customerRepository.findById(customerId).map(customer -> {
+            Dealership dealership = dealershipRepository.findById(dealershipId)
+                    .orElseThrow(() -> new RuntimeException("Dealership not found"));
+
+            customer.getDealerships().add(dealership); // Add dealership to customer's list
+            return customerRepository.save(customer);
+        }).orElseThrow(() -> new RuntimeException("Customer not found"));
     }
 }
